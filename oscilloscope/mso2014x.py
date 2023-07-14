@@ -1,5 +1,21 @@
 #!/usr/bin/env python3.11
 
+# Bench -- Laboratory Instrument Control
+#     Copyright (C) 2023 Alessandro Rizzoni
+
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see https://www.gnu.org/licenses/gpl-3.0.
+
 """_summary_
 
 Returns:
@@ -13,9 +29,9 @@ from typing import Self
 from .. import bench
 
 
-class MSO2014x(bench.Oscilloscope):
+class MSO2014x(bench.Instrument):
     """
-   Class containing interface for Tektronix MSO2014(B).
+   Class containing interface for oscilloscope instruments. Currently supports Keysight DSOX1204G.
 
     Parent Class:
         Instrument
@@ -126,431 +142,431 @@ class MSO2014x(bench.Oscilloscope):
     
     
     
-# ## TODO BELOW
+## TODO BELOW
 
 
 
 
-#     def get_waveform(self) -> tuple[list[float], list[float]]:
-#         """
-#         Pulls displayed waveform data from the connected oscilloscope without changing
-#         any settings
+    def get_waveform(self) -> tuple[list[float], list[float]]:
+        """
+        Pulls displayed waveform data from the connected oscilloscope without changing
+        any settings
 
-#         Returns:
-#             t       -- list of conditioned x-axis data from oscilloscope acquisition
-#             x       -- list of conditioned y-axis data from oscilloscope acquisition
-#         """
+        Returns:
+            t       -- list of conditioned x-axis data from oscilloscope acquisition
+            x       -- list of conditioned y-axis data from oscilloscope acquisition
+        """
 
-#         # set oscilloscope to save measurement sample
-#         self.write("waveform:points:mode normal")
+        # set oscilloscope to save measurement sample
+        self.write("waveform:points:mode normal")
 
-#         # max number of points - play around with this
-#         self.write("waveform:points 1000")
+        # max number of points - play around with this
+        self.write("waveform:points 1000")
 
-#         # output in formatted ascii floating point
-#         self.write("waveform:format ascii")
+        # output in formatted ascii floating point
+        self.write("waveform:format ascii")
 
-#         self.write(f"waveform:source channel{self.current_channel}")
+        self.write(f"waveform:source channel{self.current_channel}")
 
-#         waveform_preamble: list[str] = self.query(
-#             "waveform:preamble?").split(',')  # get the preamble
+        waveform_preamble: list[str] = self.query(
+            "waveform:preamble?").split(',')  # get the preamble
 
-#         # 0=byte, 1=word, 4=ascii
-#         # waveform_format: int = int(waveform_preamble[0])
+        # 0=byte, 1=word, 4=ascii
+        # waveform_format: int = int(waveform_preamble[0])
 
-#         # 0=normal, 1=peak detect, 2=average
-#         # waveform_type: int = int(waveform_preamble[1])
+        # 0=normal, 1=peak detect, 2=average
+        # waveform_type: int = int(waveform_preamble[1])
 
-#         # number of data points transferred
-#         # waveform_points = int(waveform_preamble[2])
+        # number of data points transferred
+        # waveform_points = int(waveform_preamble[2])
 
-#         # waveform_count: bool = bool(waveform_preamble[3])  # always equal to 1
+        # waveform_count: bool = bool(waveform_preamble[3])  # always equal to 1
 
-#         # time difference between datapoints
-#         t_increment: float = float(waveform_preamble[4])
+        # time difference between datapoints
+        t_increment: float = float(waveform_preamble[4])
 
-#         # always first data point in memory
-#         # t_origin: float = float(waveform_preamble[5])
+        # always first data point in memory
+        # t_origin: float = float(waveform_preamble[5])
 
-#         # value associated with x_origin
-#         # t_reference: float = float(waveform_preamble[6])
+        # value associated with x_origin
+        # t_reference: float = float(waveform_preamble[6])
 
-#         # voltage difference between points
-#         # x_increment: float = float(waveform_preamble[7])
+        # voltage difference between points
+        # x_increment: float = float(waveform_preamble[7])
 
-#         # voltage at center screen
-#         # x_origin: float = float(waveform_preamble[8])
+        # voltage at center screen
+        # x_origin: float = float(waveform_preamble[8])
 
-#         # value where y-origin occurs
-#         # x_reference: float = float(waveform_preamble[9])
+        # value where y-origin occurs
+        # x_reference: float = float(waveform_preamble[9])
 
-#         # pull waveform from memory
-#         x_raw: str = self.query("waveform:data?")
+        # pull waveform from memory
+        x_raw: str = self.query("waveform:data?")
 
-#         # remove the ascii header and cast to float
-#         x_data: list[float] = [float(x) for x in x_raw.split(',')[1:]]
+        # remove the ascii header and cast to float
+        x_data: list[float] = [float(x) for x in x_raw.split(',')[1:]]
 
-#         # generate time vector
-#         t_data: list[float] = [t_increment*t for t in range(0, len(x_data))]
+        # generate time vector
+        t_data: list[float] = [t_increment*t for t in range(0, len(x_data))]
 
-#         return t_data, x_data
+        return t_data, x_data
 
-#     def get_settings(self) -> list[str]:
-#         """
-#         Returns settings of current channel
+    def get_settings(self) -> list[str]:
+        """
+        Returns settings of current channel
 
-#         Returns:
-#             channel_settings -- returns channel range, offset,
-#             coupling, impedance, display status, bandwidth limit,
-#             inversion status, units, probe status, probe skew,
-#             and signal type
-#         """
+        Returns:
+            channel_settings -- returns channel range, offset,
+            coupling, impedance, display status, bandwidth limit,
+            inversion status, units, probe status, probe skew,
+            and signal type
+        """
 
-#         return self.query(f"channel{self.current_channel}?")
+        return self.query(f"channel{self.current_channel}?")
 
-#     def set_trigger_level(self, trigger_level) -> None:
-#         """
-#         _summary_
+    def set_trigger_level(self, trigger_level) -> None:
+        """
+        _summary_
 
-#         Arguments:
-#             trigger_level -- _description_
-#         """
+        Arguments:
+            trigger_level -- _description_
+        """
 
-#         self.write(
-#             f"trigger:level {trigger_level}, channel{self.current_channel}")
+        self.write(
+            f"trigger:level {trigger_level}, channel{self.current_channel}")
 
-#     def get_trigger_level(self) -> float:
-#         """
-#         _summary_
+    def get_trigger_level(self) -> float:
+        """
+        _summary_
 
-#         Returns:
-#             _description_
-#         """
+        Returns:
+            _description_
+        """
 
-#         return self.query("trigger:level?")
+        return self.query("trigger:level?")
 
-#     def set_range(self, v_range) -> None:
-#         """
-#         Sets the vertical range of the current channel
+    def set_range(self, v_range) -> None:
+        """
+        Sets the vertical range of the current channel
 
-#         Arguments:
-#             v_range -- range to set for the current channel -> +/- range/2
-#         """
+        Arguments:
+            v_range -- range to set for the current channel -> +/- range/2
+        """
 
-#         self.write(
-#             f"channel{self.current_channel}:range {v_range}")
+        self.write(
+            f"channel{self.current_channel}:range {v_range}")
 
-#     def get_range(self) -> float:
-#         """
-#         Gets the vertical range of the current channel
+    def get_range(self) -> float:
+        """
+        Gets the vertical range of the current channel
 
-#         Returns:
-#             float(v_range) -- vertical range cast to float
-#         """
+        Returns:
+            float(v_range) -- vertical range cast to float
+        """
 
-#         return self.query(f"channel{self.current_channel}:range?")
+        return self.query(f"channel{self.current_channel}:range?")
 
-#     def set_attenuation(self, attenuation) -> None:
-#         """
-#         Sets the level of attenuation for the current channel. Floating point number from 1-1000
+    def set_attenuation(self, attenuation) -> None:
+        """
+        Sets the level of attenuation for the current channel. Floating point number from 1-1000
 
-#         Arguments:
-#             attenuation -- attenuation factor to write to current channel
-#         """
+        Arguments:
+            attenuation -- attenuation factor to write to current channel
+        """
 
-#         self.write(
-#             f"channel{self.current_channel}:probe {float(attenuation)}")
+        self.write(
+            f"channel{self.current_channel}:probe {float(attenuation)}")
 
-#     def get_attenuation(self) -> float:
-#         """
-#         Gets the attenuation factor for the current channel
+    def get_attenuation(self) -> float:
+        """
+        Gets the attenuation factor for the current channel
 
-#         Returns:
-#             Current channel attenuation factor
-#         """
+        Returns:
+            Current channel attenuation factor
+        """
 
-#         return self.query(f"channel{self.current_channel}:probe?")
+        return self.query(f"channel{self.current_channel}:probe?")
 
-#     def set_offset(self, offset) -> None:
-#         """Sets the waveform offset for the current channel
+    def set_offset(self, offset) -> None:
+        """Sets the waveform offset for the current channel
 
-#         Arguments:
-#             offset -- floating point value for the offset
-#         """
+        Arguments:
+            offset -- floating point value for the offset
+        """
 
-#         self.write(
-#             f"channel{self.current_channel}:offset {float(offset)}")
+        self.write(
+            f"channel{self.current_channel}:offset {float(offset)}")
 
-#     def get_offset(self) -> float:
-#         """Gets the waveform offset for the current channel
+    def get_offset(self) -> float:
+        """Gets the waveform offset for the current channel
 
-#         Returns:
-#             waveform offset value for the current channel
-#         """
+        Returns:
+            waveform offset value for the current channel
+        """
 
-#         return self.query(f"channel{self.current_channel}:offset?")
+        return self.query(f"channel{self.current_channel}:offset?")
 
-#     def set_coupling(self, coupling) -> None:
-#         """Sets the coupling mode for the current channel. AC or DC.
+    def set_coupling(self, coupling) -> None:
+        """Sets the coupling mode for the current channel. AC or DC.
 
-#         Arguments:
-#             coupling -- string - ac or dc
+        Arguments:
+            coupling -- string - ac or dc
 
-#         Returns:
-#             Coupling type error
-#         """
+        Returns:
+            Coupling type error
+        """
 
-#         match coupling:
+        match coupling:
 
-#             case "":
-#                 if self.get_coupling().lower() == 'ac':
-#                     self.write(
-#                         f"channel{self.current_channel}:coupling dc")
+            case "":
+                if self.get_coupling().lower() == 'ac':
+                    self.write(
+                        f"channel{self.current_channel}:coupling dc")
 
-#                 else:
-#                     self.write(
-#                         f"channel{self.current_channel}:coupling ac")
+                else:
+                    self.write(
+                        f"channel{self.current_channel}:coupling ac")
 
-#             case "dc" | "Dc" | "DC":
-#                 self.write(
-#                     f"channel{self.current_channel}:coupling dc")
+            case "dc" | "Dc" | "DC":
+                self.write(
+                    f"channel{self.current_channel}:coupling dc")
 
-#             case "ac" | "Ac" | "AC":
-#                 self.write(
-#                     f"channel{self.current_channel}:coupling ac")
+            case "ac" | "Ac" | "AC":
+                self.write(
+                    f"channel{self.current_channel}:coupling ac")
 
-#             case _:  # TODO
-#                 pass
+            case _:  # TODO
+                pass
 
-#     def get_coupling(self) -> str:
-#         """
-#         Gets the current channel's coupling mode
+    def get_coupling(self) -> str:
+        """
+        Gets the current channel's coupling mode
 
-#         Returns:
-#             coupling type
-#         """
+        Returns:
+            coupling type
+        """
 
-#         return self.query(
-#             f"channel{self.current_channel}:coupling?")
+        return self.query(
+            f"channel{self.current_channel}:coupling?")
 
-#     def get_impedance(self) -> str:
-#         """
-#         Gets the impedance of the current channel. Most oscilloscopes cannot change the input
-#         impedance.
+    def get_impedance(self) -> str:
+        """
+        Gets the impedance of the current channel. Most oscilloscopes cannot change the input
+        impedance.
 
-#         Returns:
-#             input impedance
-#         """
+        Returns:
+            input impedance
+        """
 
-#         return self.query(f"channel{self.current_channel}:impedance?")
+        return self.query(f"channel{self.current_channel}:impedance?")
 
-#     def set_display(self, status) -> None:
-#         """Sets the Boolean value for the display of the current channel -> 1 == ON and 0 == OFF
+    def set_display(self, status) -> None:
+        """Sets the Boolean value for the display of the current channel -> 1 == ON and 0 == OFF
 
-#         Arguments:
-#             status -- boolean value, is the current channel displayed?
+        Arguments:
+            status -- boolean value, is the current channel displayed?
 
-#         Returns:
-#             Display Error
-#         """
+        Returns:
+            Display Error
+        """
 
-#         match status:
+        match status:
 
-#             case "":
-#                 if not self.get_display():
-#                     self.write(
-#                         f"channel{self.current_channel}:display on")
+            case "":
+                if not self.get_display():
+                    self.write(
+                        f"channel{self.current_channel}:display on")
 
-#                 else:
-#                     self.write(
-#                         f"channel{self.current_channel}:display off")
+                else:
+                    self.write(
+                        f"channel{self.current_channel}:display off")
 
-#             case "on" | "ON" | "On" | 1 | True:
-#                 self.write(
-#                     f"channel{self.current_channel}:display on")
+            case "on" | "ON" | "On" | 1 | True:
+                self.write(
+                    f"channel{self.current_channel}:display on")
 
-#             case "off" | "OFF" | "Off" | 0 | False:
-#                 self.write(
-#                     f"channel{self.current_channel}:display off")
+            case "off" | "OFF" | "Off" | 0 | False:
+                self.write(
+                    f"channel{self.current_channel}:display off")
 
-#             case _:  # TODO
-#                 pass
+            case _:  # TODO
+                pass
 
-#     def get_display(self) -> bool:
-#         """
-#         Gets the status of the display for the current channel. Is the current channel's
-#         waveform displayed?
+    def get_display(self) -> bool:
+        """
+        Gets the status of the display for the current channel. Is the current channel's
+        waveform displayed?
 
-#         Returns:
-#             Display status for the current channel
-#         """
+        Returns:
+            Display status for the current channel
+        """
 
-#         return self.query(
-#             f"channel{self.current_channel}:display?")
+        return self.query(
+            f"channel{self.current_channel}:display?")
 
-#     def set_bwlimit(self, status) -> None:
-#         """
-#         Sets the bandwidth limit for the current channel
+    def set_bwlimit(self, status) -> None:
+        """
+        Sets the bandwidth limit for the current channel
 
-#         Arguments:
-#             status -- status of the bandwidth limiter circuitry
-#         """
+        Arguments:
+            status -- status of the bandwidth limiter circuitry
+        """
 
-#         match status:
+        match status:
 
-#             case "":
-#                 if not self.get_bwlimit():
-#                     self.write(
-#                         f"channel{self.current_channel}:bwlimit on")
+            case "":
+                if not self.get_bwlimit():
+                    self.write(
+                        f"channel{self.current_channel}:bwlimit on")
 
-#                 else:
-#                     self.write(
-#                         f"channel{self.current_channel}:bwlimit off")
+                else:
+                    self.write(
+                        f"channel{self.current_channel}:bwlimit off")
 
-#             case "on" | "ON" | "On" | 1 | True:
-#                 self.write(
-#                     f"channel{self.current_channel}:bwlimit on")
+            case "on" | "ON" | "On" | 1 | True:
+                self.write(
+                    f"channel{self.current_channel}:bwlimit on")
 
-#             case "off" | "OFF" | "Off" | 0 | False:
-#                 self.write(
-#                     f"channel{self.current_channel}:bwlimit off")
+            case "off" | "OFF" | "Off" | 0 | False:
+                self.write(
+                    f"channel{self.current_channel}:bwlimit off")
 
-#             case _:  # TODO
-#                 pass
+            case _:  # TODO
+                pass
 
-#     def get_bwlimit(self) -> bool:
-#         """
-#         Gets the status of the bandwidth limiter circuit
+    def get_bwlimit(self) -> bool:
+        """
+        Gets the status of the bandwidth limiter circuit
 
-#         Returns:
-#             boolean status of the bandwidth limiter circuit
-#         """
+        Returns:
+            boolean status of the bandwidth limiter circuit
+        """
 
-#         return self.query(f"channel{self.current_channel}:bwlimit?")
+        return self.query(f"channel{self.current_channel}:bwlimit?")
 
-#     def set_wfinvert(self, status) -> None:
-#         """
-#         Sets the waveform inversion status. On or Off
+    def set_wfinvert(self, status) -> None:
+        """
+        Sets the waveform inversion status. On or Off
 
-#         Arguments:
-#             status -- inversion status, boolean
+        Arguments:
+            status -- inversion status, boolean
 
-#         Returns:
-#             Waveform Inversion Error
-#         """
+        Returns:
+            Waveform Inversion Error
+        """
 
-#         match status:
+        match status:
 
-#             case "":
-#                 if not self.get_wfinvert():
-#                     self.write(
-#                         f"channel{self.current_channel}:invert on")
-#                 else:
-#                     self.write(
-#                         f"channel{self.current_channel}:invert off")
+            case "":
+                if not self.get_wfinvert():
+                    self.write(
+                        f"channel{self.current_channel}:invert on")
+                else:
+                    self.write(
+                        f"channel{self.current_channel}:invert off")
 
-#             case "on" | "ON" | "On" | 1 | True:
-#                 self.write(
-#                     f"channel{self.current_channel}:invert on")
+            case "on" | "ON" | "On" | 1 | True:
+                self.write(
+                    f"channel{self.current_channel}:invert on")
 
-#             case "off" | "OFF" | "Off" | 0 | False:
-#                 self.write(
-#                     f"channel{self.current_channel}:invert off")
+            case "off" | "OFF" | "Off" | 0 | False:
+                self.write(
+                    f"channel{self.current_channel}:invert off")
 
-#             case _:  # TODO
-#                 pass
+            case _:  # TODO
+                pass
 
-#     def get_wfinvert(self) -> bool:
-#         """
-#         Gets the waveform inversion status for the current channel
+    def get_wfinvert(self) -> bool:
+        """
+        Gets the waveform inversion status for the current channel
 
-#         Returns:
-#             waveform inversion status for the current channel
-#         """
+        Returns:
+            waveform inversion status for the current channel
+        """
 
-#         return self.query(
-#             f"channel{self.current_channel}:invert?")
+        return self.query(
+            f"channel{self.current_channel}:invert?")
 
-#     def set_unit(self, unit) -> None:
-#         """
-#         Sets the unit for the current channel
+    def set_unit(self, unit) -> None:
+        """
+        Sets the unit for the current channel
 
-#         Arguments:
-#             unit -- unit, usually Volts or Amps
+        Arguments:
+            unit -- unit, usually Volts or Amps
 
-#         Returns:
-#             Unit Error
-#         """
+        Returns:
+            Unit Error
+        """
 
-#         match unit:
+        match unit:
 
-#             case "":
-#                 if self.get_unit().lower() == 'amp':
-#                     self.write(
-#                         f"channel{self.current_channel}:unit volt")
-#                 else:
-#                     self.write(
-#                         f"channel{self.current_channel}:unit amp")
+            case "":
+                if self.get_unit().lower() == 'amp':
+                    self.write(
+                        f"channel{self.current_channel}:unit volt")
+                else:
+                    self.write(
+                        f"channel{self.current_channel}:unit amp")
 
-#             case "volt" | "VOLT" | "Volt" | "voltage" | "Voltage" | "VOLTAGE":
-#                 self.write(
-#                     f"channel{self.current_channel}:unit volt")
+            case "volt" | "VOLT" | "Volt" | "voltage" | "Voltage" | "VOLTAGE":
+                self.write(
+                    f"channel{self.current_channel}:unit volt")
 
-#             case "amp" | "AMP" | "Amp" | "ampere" | "Ampere" | "AMPERE":
-#                 self.write(
-#                     f"channel{self.current_channel}:unit amp")
+            case "amp" | "AMP" | "Amp" | "ampere" | "Ampere" | "AMPERE":
+                self.write(
+                    f"channel{self.current_channel}:unit amp")
 
-#             case _:  # TODO
-#                 pass
+            case _:  # TODO
+                pass
 
-#     def get_unit(self) -> str:
-#         """
-#         Gets the units for the current channel
+    def get_unit(self) -> str:
+        """
+        Gets the units for the current channel
 
-#         Returns:
-#             unit for the current channel
-#         """
+        Returns:
+            unit for the current channel
+        """
 
-#         return self.query(f"channel{self.current_channel}:unit?")
+        return self.query(f"channel{self.current_channel}:unit?")
 
-#     def set_sigtype(self, sigtype: str) -> None:
-#         """Sets the type of signal for the current channel
+    def set_sigtype(self, sigtype: str) -> None:
+        """Sets the type of signal for the current channel
 
-#         Arguments:
-#             sigtype -- single-ended or differential
+        Arguments:
+            sigtype -- single-ended or differential
 
-#         Returns:
-#             Signal Type Error
-#         """
+        Returns:
+            Signal Type Error
+        """
 
-#         match sigtype.lower():
+        match sigtype.lower():
 
-#             case "":
-#                 if self.get_sigtype().lower() == 'sing':
-#                     self.write(
-#                         f"channel{self.current_channel}:stype differential")
+            case "":
+                if self.get_sigtype().lower() == 'sing':
+                    self.write(
+                        f"channel{self.current_channel}:stype differential")
 
-#                 else:
-#                     self.write(
-#                         f"channel{self.current_channel}:stype single")
+                else:
+                    self.write(
+                        f"channel{self.current_channel}:stype single")
 
-#             case "single" | "single-ended" | "sing":
-#                 self.write(
-#                     f"channel{self.current_channel}:stype single")
+            case "single" | "single-ended" | "sing":
+                self.write(
+                    f"channel{self.current_channel}:stype single")
 
-#             case "differential" | "diff":
-#                 self.write(
-#                     f"channel{self.current_channel}:stype differential")
+            case "differential" | "diff":
+                self.write(
+                    f"channel{self.current_channel}:stype differential")
 
-#             case _:  # TODO
-#                 pass
+            case _:  # TODO
+                pass
 
-#     def get_sigtype(self) -> str:
-#         """
-#         Gets the type of signal for the current channel
+    def get_sigtype(self) -> str:
+        """
+        Gets the type of signal for the current channel
 
-#         Returns:
-#             signal type for the current channel
-#         """
+        Returns:
+            signal type for the current channel
+        """
 
-#         return self.query(f"channel{self.current_channel}:stype?")
+        return self.query(f"channel{self.current_channel}:stype?")
