@@ -146,7 +146,7 @@ class MSO2014x(bench.Instrument):
 ## TODO BELOW
 
 
-
+'''
 
     def get_waveform(self) -> tuple[list[float], list[float]]:
         """
@@ -571,3 +571,4 @@ class MSO2014x(bench.Instrument):
         """
 
         return self.query(f"channel{self.current_channel}:stype?")
+'''
