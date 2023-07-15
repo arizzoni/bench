@@ -1,4 +1,4 @@
-# Bench v0.0.3
+# Bench -- Laboratory Instrument Control
 
 ## Introduction
 
