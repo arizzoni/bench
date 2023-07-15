@@ -31,7 +31,7 @@ from .. import bench
 
 
 class E36300(bench.Instrument):
-    """Class to interface with a bench power supply. Currently supports Keysight E36313A.
+    """Class to interface with the Keysight E36313A.
 
     Parent Class:
         Instrument

@@ -17,6 +17,7 @@ Bench -- Laboratory Instrument Control
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see https://www.gnu.org/licenses/gpl-3.0.
 '''
+
 """_summary_
 
 Returns:
@@ -32,7 +33,7 @@ from .. import bench
 
 class DSOX120x(bench.Instrument):
     """
-   Class containing interface for oscilloscope instruments. Currently supports Keysight DSOX1204G.
+   Class containing interface for the Keysight DSOX1204G.
 
     Parent Class:
         Instrument

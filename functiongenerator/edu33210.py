@@ -30,7 +30,7 @@ from .. import bench
 
 class edu33210(bench.Instrument):
     """
-    _summary_ # TODO
+    Class containing interface for the Keysight EDU33210.
 
     Parent Class:
         Instrument

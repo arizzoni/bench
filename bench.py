@@ -239,7 +239,7 @@ class InstrumentFinder():
 
     def __init__(self) -> None:
         """
-        Initializer for the InstrumentFinder class; starts resource manager
+        Constructor for the InstrumentFinder class; starts resource manager
         """
 
         # start the resource manager at initialization
@@ -250,7 +250,7 @@ class InstrumentFinder():
         Function to find and list connected serial devices
         TODO
         - Update to look for certain instrument types, prefer USB over LAN, etc.
-            - Is is possible to identify the type of instrument and pull data -> num channels?
+            - Is is possible to identify the type of instrument and pull data e.g. num channels?
         """
 
         # generate a list of connected serial devices

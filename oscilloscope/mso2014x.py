@@ -32,7 +32,7 @@ from .. import bench
 
 class MSO2014x(bench.Instrument):
     """
-   Class containing interface for oscilloscope instruments. Currently supports Keysight DSOX1204G.
+   Class containing interface for the Tektronix MSO2014(B).
 
     Parent Class:
         Instrument
