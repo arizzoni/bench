@@ -9,11 +9,11 @@ authors = [
   { name="Alessandro Rizzoni", email="rizzoni.alex@gmail.com" },
 ]
 description = ""
-readme = "README.md"
+readme = "readme.md"
 requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: Other/Proprietart License",
+    "License :: GPLv3",
     "Operating System :: OS Independent",
 ]
 
