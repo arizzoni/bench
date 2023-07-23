@@ -39,7 +39,7 @@ class MSO2014x(bench.Instrument):
     """
 
     current_channel: int = 1  # initialize to channel 1
-    num_channels: int = 4  # pull this from the instrument
+    num_channels: int = 4  # TODO pull this from the instrument
     channel_list: list[int] = list(range(1, num_channels+1))
 
     def __init__(self, address: str) -> None:
@@ -55,14 +55,9 @@ class MSO2014x(bench.Instrument):
 
         # set the date and time
         time: struct_time = dt.now().timetuple()
-        date_string: str = f"{time[0]}, {time[1]}, {time[2]}"
-        time_string: str = f"{time[3]}, {time[4]}, {time[5]}"
-
-        date_message: str = f"date {date_string}"
-        time_message: str = f"time {time_string}" 
-        
-        self.write(date_message)
-        self.write(time_message)
+       
+        self.write(f"date {time[0]}, {time[1]}, {time[2]}")
+        self.write(f"time {time[3]}, {time[4]}, {time[5]}")
 
         print("INSTRUMENT INITIALIZED")  # write initialization message
 
@@ -71,8 +66,7 @@ class MSO2014x(bench.Instrument):
         Disable front panel controls
         """
 
-        message: str = f"lock"
-        self.write(message)  # disable front panel controls
+        self.write("lock")  # disable front panel controls
         return self
 
     def system_unlock(self) -> Self:
@@ -80,8 +74,7 @@ class MSO2014x(bench.Instrument):
         Enable front panel controls
         """
 
-        message: str = f"unlock"
-        self.write(message)  # disable front panel controls
+        self.write("unlock")  # disable front panel controls
         return self
 
     def channel(self, channel_number: int) -> Self | None:
@@ -96,18 +89,13 @@ class MSO2014x(bench.Instrument):
         """
 
         match channel_number:
-
-            case "":
-                pass
-
             case chan if chan in self.channel_list:  # if a real channel is selected,
                 self.current_channel = channel_number # set current_channel to selected channel
                 return self  # return instance
-
             case _:  # otherwise return an error message
-                pass
+                raise Exception("Channel Number Error: Channel out of range")
 
-    def set_label(self, channel: int, label: str) -> None:
+    def set_label(self, channel: int, label: str = "Channel {channel}") -> None:
         """
         Writes waveform labels to the oscilloscope screen
 
@@ -118,17 +106,11 @@ class MSO2014x(bench.Instrument):
         # there are two sections to each message here, the command and the label itself
         # the command section is the one that varies, so the label code can stay the same each time
 
-        if not label: # if there is no label provided, make one up
-            label = "Channel {channel}"
-        label = f"\"{label}\"" # we need the label to be surrounded by escaped double-quotes
-        
-        command: str = f"ch{channel}:label "
-
         match channel:
             case chan if chan in self.channel_list:  # if a real channel is selected,
-                self.write(command + label) # label it
+                self.write(f"ch{channel}:label \"{label}\"") # label it
             case _:  # otherwise return an error message
-                pass
+                raise Exception("Channel Number Error: Channel out of range")
 
         return self
 
@@ -136,8 +118,9 @@ class MSO2014x(bench.Instrument):
         """
         Autoscales current channel
         """
-        message: str = f"autoset enable" # refactor to have the same behavior as DSOX?
-        self.write(message)
+        
+        # refactor to have the same behavior as DSOX?
+        self.write("autoset enable")
         return self    
     
     def set_input_params(self, n_bits: int, binary_format: str, n_bytes: int, byte_order: str, 
