@@ -138,80 +138,338 @@ class MSO2014x(bench.Instrument):
         """
         message: str = f"autoset enable" # refactor to have the same behavior as DSOX?
         self.write(message)
-        return self
+        return self    
     
-    
-    
-    
-## TODO BELOW
-
-
-'''
-
-    def get_waveform(self) -> tuple[list[float], list[float]]:
+    def set_input_params(self, n_bits: int, binary_format: str, n_bytes: int, byte_order: str, 
+                     composition: str, encoding: str, filter_frequency: int, n_points: int, 
+                     point_format: str, point_offset: int, x_increment: float, x_unit: str, 
+                     x_zero: float, y_multiplier: float, y_offset: float, y_unit: str, 
+                     y_zero: float) -> Self:
+        
         """
-        Pulls displayed waveform data from the connected oscilloscope without changing
-        any settings
-
+        This method sets the parameters for the waveform prior to acquisition
+        
+        Arguments:
+            n_bits
+            binary_format
+            n_bytes
+            byte-order
+            composition
+            encoding
+            filter_frequency
+            n_points
+            point_format
+            point_offset
+            x_increment
+            x_unit
+            x_zero
+            y_multiplier
+            y_offset
+            y_unit
+            y_zero
+        
         Returns:
-            t       -- list of conditioned x-axis data from oscilloscope acquisition
-            x       -- list of conditioned y-axis data from oscilloscope acquisition
+        Self
         """
+        # there is probably a better way to do this, and a better place to do it
+        # need this later
+        units = ["%", "/Hz", "A", "A/A", "A/V", "A/W", "A/dB", "A/s", "AA", "AW", "AdB", "As", "B", "Hz", "IRE", "S/s", "V", "V/A", "V/V", "V/W", "V/dB", "V/s", "VV", "VW", "VdB", "Volts", "Vs", "W", "W/A", "W/V", "W/W", "W/dB", "W/s", "WA", "WV", "WW", "WdB", "Ws", "dB", "dB/A", "dB/V", "dB/W", "dB/dB", "dBA", "dBV", "dBW", "dBdB", "day", "degrees", "div", "hr", "min", "ohms", "percent", "s"] # pulled from programmers guide page 2-359
+        
+        # set number of bits for waveform data - 8-bit or 16-bit
+        # also changes byte number
+        if n_bits:
+            match n_bits:
+                case 8, 16:
+                    self.write(f"wfminpre:bit_nr {int(n_bits)}")
+                case _:
+                    raise Exception("Bit Number Error: Only 8-bit and 16-bit allowed")
 
-        # set oscilloscope to save measurement sample
-        self.write("waveform:points:mode normal")
+        # set binary format for waveform data - signed or unsigned integer    
+        if binary_format:
+            match binary_format:
+                case "signed", "unsigned":
+                    if binary_format == "signed":
+                        binary_format == "RI"
+                    else:
+                        binary_format == "RP"
+                    self.write(f"wfminpre:bn_fmt {str(binary_format)}")
+                case _:
+                    raise Exception("Binary Format Error: Only signed and unsigned integer formats allowed")
 
-        # max number of points - play around with this
-        self.write("waveform:points 1000")
+        # set number of bytes for waveform data - 1-byte or 2-byte
+        # also changes bit number
+        if n_bytes:
+            match n_bytes:
+                case 1, 2:
+                    self.write(f"wfminpre:byt_nr {int(n_bytes)}")
+                case _:
+                    raise Exception("Byte Number Error: Only 1-byte and 2-byte allowed")
 
-        # output in formatted ascii floating point
-        self.write("waveform:format ascii")
+        # set binary format for waveform data - signed or unsigned integer    
+        if binary_format:
+            match binary_format:
+                case "signed", "unsigned":
+                    if binary_format == "signed":
+                        binary_format == "RI"
+                    else: 
+                        binary_format == "RP"
+                    self.write(f"wfminpre:bn_fmt {str(binary_format)}")
+                case _:
+                    raise Exception("Binary Format Error: Only signed and unsigned integer formats allowed")
 
-        self.write(f"waveform:source channel{self.current_channel}")
+        # set byte order for waveform data - least-significant-byte or most-significant-byte
+        if byte_order:
+            match byte_order:
+                case "lsb", "msb":
+                    self.write(f"wfminpre:byt_or {str(byte_order)}")
+                case _:
+                    raise Exception("Byte Order Error: Only least-significant-byte (lsb) and most-significant-byte (msb) allowed")
 
-        waveform_preamble: list[str] = self.query(
-            "waveform:preamble?").split(',')  # get the preamble
+        # set the type of waveform data to be transferred
+        if composition:
+            match composition:
+                case "composite", "peak-detect", "singular":
+                    if composition == "composite":
+                        composition = "composite_yt"
+                    elif composition == "peak-detect":
+                        composition = "composite_env"
+                    else: 
+                        composition = "singular_yt"
+                    self.write(f"wfminpre:composition {str(composition)}")
+                case _:
+                    raise Exception("Composition Error: Only composite, peak-detect, and singular allowed")
 
-        # 0=byte, 1=word, 4=ascii
-        # waveform_format: int = int(waveform_preamble[0])
+        # set the encoding for the waveform data - either ascii or binary
+        if encoding:
+            match encoding:
+                case "ascii", "binary":
+                    self.write(f"wfminpre:encdg {str(encoding)}")
+                case _:
+                    raise Exception("Encoding Error: Only ascii and binary encodings are allowed")
 
-        # 0=normal, 1=peak detect, 2=average
-        # waveform_type: int = int(waveform_preamble[1])
+        # set the digital filter frequency for the waveform data
+        if filter_frequency:
+            self.write(f"wfminpre:filterfreq {int(filter_frequency)}")
+            # TODO raise Exception("Filter Frequency Error: Invalid frequency selected")
 
-        # number of data points transferred
-        # waveform_points = int(waveform_preamble[2])
+        # set the number of points to acquire
+        if n_points:
+            self.write(f"wfminpre:nr_pt {int(n_points)}")
+            # TODO raise Exception("Point Number Error: Invalid number of points")
+        
+        # set the point format - envelope or singular
+        if point_format:
+            match point_format:
+                case "envelope", "singular":
+                    self.write(f"wfminpre:encdg {str(encoding)}")
+                case _:
+                    raise Exception("Encoding Error: Only ascii and binary encodings are allowed")
+        
+        # set point offset - unsused
+        if point_offset:
+            self.write(f"wfminpre:pt_off {int(point_offset)}")
 
-        # waveform_count: bool = bool(waveform_preamble[3])  # always equal to 1
+        # set the x increment, measured in units of x_unit
+        if x_increment:
+            self.write(f"wfminpre:xincr {float(x_increment)}")
+        
+        # set the x unit for the waveform data
+        if x_unit:
+            
+            match x_unit:
+                case unit if unit in units:
+                    self.write(f"wfminpre:xunit {str(x_unit)}")
+                case _:
+                    raise Exception("Unit Error: invalid unit")
 
-        # time difference between datapoints
-        t_increment: float = float(waveform_preamble[4])
+        # set the position value in x_unit of the first sample of the incoming waveform
+        if x_zero:
+            self.write(f"wfminpre:xzero {float(x_zero)}")
 
-        # always first data point in memory
-        # t_origin: float = float(waveform_preamble[5])
+        # set the vertical scale factor for the waveform data
+        if y_multiplier:
+            self.write(f"wfminpre:ymult {float(y_multiplier)}")       
+        
+        # set the vertical offset for the waveform data    
+        if y_offset:
+            self.write(f"wfminpre:yoff {float(y_offset)}")        
+        
+        # set the y unit for the waveform data
+        if y_unit:
+            match y_unit:
+                case unit if unit in units:
+                    self.write(f"wfminpre:yunit {str(y_unit)}")
+                case _:
+                    raise Exception("Unit Error: invalid unit")        
+        
+        # set the y value, in units of y_unit, of the first data point        
+        if y_zero:
+            self.write(f"wfminpre:yzero {float(y_zero)}")        
+                
+    def get_input_params(self) -> Self:
+        """
+        This method gets the parameters for the waveform prior to acquisition and returns a list
+        
+        Arguments:
+            None
+        
+        Returns:
+            List(
+                n_bits
+                binary_format
+                n_bytes
+                byte-order
+                composition
+                encoding
+                filter_frequency
+                n_points
+                point_format
+                point_offset
+                x_increment
+                x_unit
+                x_zero
+                y_multiplier
+                y_offset
+                y_unit
+                y_zero
+            )
+        """    
+        # get number of bits for waveform data - 8-bit or 16-bit
+        n_bits: int = self.query(f"wfminpre:bit_nr?")
 
-        # value associated with x_origin
-        # t_reference: float = float(waveform_preamble[6])
+        # get binary format for waveform data - signed or unsigned integer    
+        binary_format: str = self.query(f"wfminpre:bn_fmt?")
 
-        # voltage difference between points
-        # x_increment: float = float(waveform_preamble[7])
+        # get number of bytes for waveform data - 1-byte or 2-byte
+        n_bytes: int = self.query(f"wfminpre:byt_nr?")
 
-        # voltage at center screen
-        # x_origin: float = float(waveform_preamble[8])
+        # get byte order for waveform data - least-significant-byte or most-significant-byte
+        byte_order: str = self.query(f"wfminpre:byt_or?")
 
-        # value where y-origin occurs
-        # x_reference: float = float(waveform_preamble[9])
+        # get the type of waveform data to be transferred
+        composition: str = self.query(f"wfminpre:composition?")
 
-        # pull waveform from memory
-        x_raw: str = self.query("waveform:data?")
+        # get the encoding for the waveform data - either ascii or binary
+        encoding: str = self.query(f"wfminpre:encdg?")
+        
+        # get the digital filter frequency for the waveform data
+        filter_frequency: int = self.query(f"wfminpre:filterfreq?")
 
-        # remove the ascii header and cast to float
-        x_data: list[float] = [float(x) for x in x_raw.split(',')[1:]]
+        # get the number of points to acquire
+        n_points: int = self.query(f"wfminpre:nr_pt?")
+        
+        # get the point format - envelope or singular
+        point_format: str = self.query(f"wfminpre:pt_fmt?")
+        
+        # get point offset - unsused
+        point_offset: int = self.query(f"wfminpre:pt_off?")
 
-        # generate time vector
-        t_data: list[float] = [t_increment*t for t in range(0, len(x_data))]
+        # get the x increment, measured in units of x_unit
+        x_increment: float = self.query(f"wfminpre:xincr?")
+        
+        # get the x unit for the waveform data
+        x_unit: str = self.query(f"wfminpre:xunit?")
 
-        return t_data, x_data
+        # get the position value in x_unit of the first sample of the incoming waveform
+        x_zero: float = self.query(f"wfminpre:xzero?")
 
+        # get the vertical scale factor for the waveform data
+        y_multiplier: float = self.query(f"wfminpre:ymult?")       
+        
+        # get the vertical offset for the waveform data    
+        y_offset: float = self.query(f"wfminpre:yoff?")        
+        
+        # get the y unit for the waveform data
+        y_unit: str = self.query(f"wfminpre:yunit?")       
+        
+        # get the y value, in units of y_unit, of the first data point        
+        y_zero: float = self.query(f"wfminpre:yzero?")  
+          
+        return [n_bits, binary_format, n_bytes, byte_order, composition, encoding, filter_frequency, n_points, point_format, point_offset, x_increment, x_unit, x_zero, y_multiplier, y_offset, y_unit, y_zero]
+                
+    def get_output_params(self) -> Self:
+        """
+        This method gets the parameters for the waveform following acquisition and returns a list
+        
+        Arguments:
+            None
+        
+        Returns:
+            List(
+                n_bits
+                binary_format
+                n_bytes
+                byte-order
+                composition
+                encoding
+                filter_frequency
+                n_points
+                point_format
+                point_offset
+                x_increment
+                x_unit
+                x_zero
+                y_multiplier
+                y_offset
+                y_unit
+                y_zero
+            )
+        """    
+        # get number of bits for waveform data - 8-bit or 16-bit
+        n_bits: int = self.query(f"wfmoutpre:bit_nr?")
+
+        # get binary format for waveform data - signed or unsigned integer    
+        binary_format: str = self.query(f"wfmoutpre:bn_fmt?")
+
+        # get number of bytes for waveform data - 1-byte or 2-byte
+        n_bytes: int = self.query(f"wfmoutpre:byt_nr?")
+
+        # get byte order for waveform data - least-significant-byte or most-significant-byte
+        byte_order: str = self.query(f"wfmoutpre:byt_or?")
+
+        # get the type of waveform data to be transferred
+        composition: str = self.query(f"wfmoutpre:composition?")
+
+        # get the encoding for the waveform data - either ascii or binary
+        encoding: str = self.query(f"wfmoutpre:encdg?")
+        
+        # get the digital filter frequency for the waveform data
+        filter_frequency: int = self.query(f"wfmoutpre:filterfreq?")
+
+        # get the number of points to acquire
+        n_points: int = self.query(f"wfmoutpre:nr_pt?")
+        
+        # get the point format - envelope or singular
+        point_format: str = self.query(f"wfmoutpre:pt_fmt?")
+        
+        # get point offset - unsused
+        point_offset: int = self.query(f"wfmoutpre:pt_off?")
+
+        # get the x increment, measured in units of x_unit
+        x_increment: float = self.query(f"wfmoutpre:xincr?")
+        
+        # get the x unit for the waveform data
+        x_unit: str = self.query(f"wfmoutpre:xunit?")
+
+        # get the position value in x_unit of the first sample of the incoming waveform
+        x_zero: float = self.query(f"wfmoutpre:xzero?")
+
+        # get the vertical scale factor for the waveform data
+        y_multiplier: float = self.query(f"wfmoutpre:ymult?")       
+        
+        # get the vertical offset for the waveform data    
+        y_offset: float = self.query(f"wfmoutpre:yoff?")        
+        
+        # get the y unit for the waveform data
+        y_unit: str = self.query(f"wfmoutpre:yunit?")       
+        
+        # get the y value, in units of y_unit, of the first data point        
+        y_zero: float = self.query(f"wfmoutpre:yzero?")  
+          
+        return [n_bits, binary_format, n_bytes, byte_order, composition, encoding, filter_frequency, n_points, point_format, point_offset, x_increment, x_unit, x_zero, y_multiplier, y_offset, y_unit, y_zero]
+
+## TODO BELOW
+'''
     def get_settings(self) -> list[str]:
         """
         Returns settings of current channel
