@@ -1,31 +1,7 @@
 #!/usr/bin/env python3.11
 
-'''
-Bench -- Laboratory Instrument Control
-    Copyright (C) 2023 Alessandro Rizzoni
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see https://www.gnu.org/licenses/gpl-3.0.
-'''
-
-"""Base instrument class for the bench module. Interfaces with the pyvisa module
-to communicate with connected instruments using basic write and read functionality.
-
-__init__ method begins communication with the instrument at the provided address
-"""
-
-import pyvisa
 from typing import Tuple
+import pyvisa
 
 class Instrument():
     """
@@ -60,20 +36,6 @@ class Instrument():
         # begin communicating with the instrument
         self.instrument: pyvisa.Resource = self.resource_manager.open_resource(
             self.address)
-
-        # query identifying information
-        self.info: str = self.instrument.query("*IDN?")
-        
-        if 'keysight' in self.info.lower():
-            self.make = "Keysight"
-            if 'dsox1204g' in self.info.lower():
-                self.model = "DSOX120xx"
-
-        elif 'tektronix mso2014' in self.info.lower():
-            self.make = "Tektronix"
-            if 'mso2014' in self.info.lower():
-                self.model = "MSO2014"
-        
 
     def close(self) -> None:
         """Close the pyvisa Resource Manager session
@@ -280,6 +242,5 @@ class InstrumentFinder():
 
             # print the identifier information
             print(
-                f"\n{manufacturer} {model_number}",
-                "\n",
-                f"SN: {serial_number}\nREV: {revision_code}ADDRESS: {instrument}")
+                f"\n{manufacturer} {model_number}\n",
+                f"SN: {serial_number}\nREV: {revision_code}\nADDRESS: {instrument}")

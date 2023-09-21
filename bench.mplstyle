@@ -1,21 +1,5 @@
 ### MATPLOTLIBRC
 
-# Bench -- Laboratory Instrument Control
-#     Copyright (C) 2023 Alessandro Rizzoni
-
-#     This program is free software: you can redistribute it and/or modify
-#     it under the terms of the GNU General Public License as published by
-#     the Free Software Foundation, either version 3 of the License, or
-#     (at your option) any later version.
-
-#     This program is distributed in the hope that it will be useful,
-#     but WITHOUT ANY WARRANTY; without even the implied warranty of
-#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#     GNU General Public License for more details.
-
-#     You should have received a copy of the GNU General Public License
-#     along with this program.  If not, see https://www.gnu.org/licenses/gpl-3.0.
-
 # ***************************************************************************
 # * BACKENDS                                                                *
 # ***************************************************************************
@@ -58,7 +42,7 @@
 # ***************************************************************************
 # See https://matplotlib.org/api/artist_api.html#module-matplotlib.lines
 # for more information on line properties.
-lines.linewidth: 1.5               # line width in points
+lines.linewidth: 2               # line width in points
 lines.linestyle: -                 # solid line
 lines.color: C0                # has no affect on plot(); see axes.prop_cycle
 lines.marker: None        # the default marker
@@ -113,7 +97,7 @@ boxplot.vertical: True
 boxplot.whiskers: 1.5
 boxplot.bootstrap: None
 boxplot.patchartist: False
-boxplot.showmeans: False
+boxplot.showmeans: True
 boxplot.showcaps: True
 boxplot.showbox: True
 boxplot.showfliers: True
@@ -211,11 +195,8 @@ font.weight: normal
 font.stretch: normal
 font.size: 10.0
 
-font.serif: Source Serif Pro, Cascadia Code PL, Bitstream Vera Serif, Computer Modern Roman, New Century Schoolbook, Century Schoolbook L, Utopia, ITC Bookman, Bookman, Nimbus Roman No9 L, Times New Roman, Times, Palatino, Charter, serif
-font.sans-serif: Source Sans Pro, Cascadia Mono PL, Bitstream Vera Sans, Computer Modern Sans Serif, Lucida Grande, Verdana, Geneva, Lucid, Arial, Helvetica, Avant Garde, sans-serif
-font.cursive: Apple Chancery, Textile, Zapf Chancery, Sand, Script MT, Felipa, Comic Neue, Comic Sans MS, cursive
-font.fantasy: Cascadia Code PL, Cascadia Mono PL, Courier Prime Code, Deja Vu Sans Mono, Bitstream Vera Sans Mono, Computer Modern Typewriter, Andale Mono, Nimbus Mono L, Courier New, Courier, Fixed, Terminal, monospace
-font.monospace: Source Code Pro, Cascadia Mono, Cascadia Code, Courier Prime Code, Deja Vu Sans Mono, Bitstream Vera Sans Mono, Computer Modern Typewriter, Andale Mono, Nimbus Mono L, Courier New, Courier, Fixed, Terminal, monospace
+font.sans-serif: Inter
+font.monospace: Inconsolata
 
 
 # ***************************************************************************
