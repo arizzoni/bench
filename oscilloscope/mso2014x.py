@@ -11,7 +11,6 @@
 # impedance
 # signal type
 # waveform invert
-# bw limit
 # get waveform
 
 

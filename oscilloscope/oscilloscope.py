@@ -4,6 +4,18 @@
 '''
 _summary
 '''
+# TODO
+# trigger
+# vertical range
+# horizontal timebase
+# attenuation
+# coupling
+# offset
+# waveform inversion 
+# impedance 
+# signal type
+# bwlimit
+# get waveform
 
 from typing import Self
 
