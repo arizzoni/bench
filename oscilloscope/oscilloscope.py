@@ -1,21 +1,21 @@
 #!/usr/bin/env python3.11
-# bench/oscilloscope/oscilloscope.py - Oscilloscope class for the bench module
-
-'''
+"""
 _summary
-'''
-# TODO
-# trigger
-# vertical range
-# horizontal timebase
-# attenuation
-# coupling
-# offset
-# waveform inversion 
-# impedance 
-# signal type
-# bwlimit
-# get waveform
+bench/oscilloscope/oscilloscope.py - Oscilloscope class for the bench module
+
+TODO
+trigger
+vertical range
+horizontal timebase
+attenuation
+coupling
+offset
+waveform inversion
+impedance
+signal type
+bwlimit
+get waveform
+"""
 
 from typing import Self
 
@@ -24,7 +24,8 @@ from .. import bench
 class Oscilloscope(bench.Instrument):
     """
     Class containing interface for oscilloscopes.
-    Inherits from bench.Instrument.
+    Inherits from bench.Instrument. Abstract base class, should not be 
+    instantiated on it's own.
     """
 
     def __init__(self, address: str) -> None:
@@ -41,7 +42,7 @@ class Oscilloscope(bench.Instrument):
 
         self.channels: int = self.__get_channels() # Returns array of channel numbers
 
-    def lock(self) -> Self:
+    def lock(self) -> Self: # move to instrument
         """
         Disable front panel controls
         """
@@ -49,7 +50,7 @@ class Oscilloscope(bench.Instrument):
         self.__lock()  # disable front panel controls
         return self
 
-    def unlock(self) -> Self:
+    def unlock(self) -> Self: # move to instrument
         """
         Enable front panel controls
         """
@@ -57,12 +58,12 @@ class Oscilloscope(bench.Instrument):
         self.__unlock()  # disable front panel controls
         return self
 
-    def channel(self, channel_number: int) -> Self | None:
+    def channel(self, channel_number: int) -> Self | None: # move to instrument
         """
         sets the oscilloscope channel to operate on
 
         Arguments:
-            channel_number -- number of channel to select
+        sewqa5r    channel_number -- number of channel to select
 
         Returns:
             self - returns parent object for second method call
@@ -252,6 +253,9 @@ class Oscilloscope(bench.Instrument):
         return 0
 
     def get_trigger_parameters(): #TODO
+        return 0
+    
+    def trigger(): # TODO
         return 0
 
     def set_input_attenuation(): #TODO
