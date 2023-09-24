@@ -587,37 +587,42 @@ class MSO2014x(oscilloscope.Oscilloscope):
     def __set_trigger(self, trigger_level: float, trigger_type: str, **kwargs) -> Self: #move to oscilloscope
         """
         Sets the oscilloscope trigger, trigger type, and trigger parameters. 
-        Most (all?) 2000-series Tek scopes have several triggering types.
+        Most (all?) scopes have several triggering types.
         
         Arguments:
-            trigger_value       vertical value to trigger waveform capture
+            trigger_level       vertical value to trigger waveform capture
             trigger_type        type of trigger used - edge_trigger
+        Keyword Arguments:
+            slope               'rise' or 'fall'; slope for edge trigger
+            coupling            'ac' or 'dc'; coupling mode for oscilloscope channel
         Returns:
             Self
         """
 
-        # Edge Trigger
+        if trigger_type.lower() in ('edge', 'pulse width', 'logic', 'video', 'runt',
+                            'transition', 'setup and hold', 'bus'):
+            self.write(f'trigger:a:type {trigger_type}')
 
         if 'trigger_source' in kwargs and kwargs['trigger_source'] in self.channels:
             trigger_source = kwargs.get('trigger_source')
         else:
             trigger_source = self.current_channel
 
-        if 'slope' in kwargs:
-            slope = kwargs.get('slope')
-        else:
-            slope = 'rise'
+        self.write(f'trigger:a:level:{trigger_source} {trigger_level}')
 
-        if 'coupling' in kwargs:
-            coupling = kwargs.get('coupling')
-        else:
-            coupling = self.__get_coupling() # not implemented yet
+        # Edge Trigger
+        if trigger_type.lower() == 'edge':
 
-        if trigger_type in ('edge', 'pulse width', 'logic', 'video', 'runt',
-                            'transition', 'setup and hold', 'bus'):
-            self.write(f'trigger:a:type {trigger_type}')
+            if 'slope' in kwargs:
+                slope = kwargs.get('slope')
+            else:
+                slope = 'rise'
 
-        if trigger_type == 'edge':
+            if 'coupling' in kwargs:
+                coupling = kwargs.get('coupling')
+            else:
+                coupling = self.__get_coupling() # not implemented yet
+
             self.write(f'trigger:a:edge:coupling {coupling}')
             self.write(f'trigger:a:edge:slope {slope}')
             self.write(f'trigger:a:edge:source ch{trigger_source}')
