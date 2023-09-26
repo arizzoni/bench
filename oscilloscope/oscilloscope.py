@@ -37,8 +37,7 @@ class Oscilloscope(bench.Instrument):
             address -- target oscilloscope's VISA address
         """
 
-        bench.Instrument.__init__(
-            self, address)  # call parent class constructor for basic init
+        super().__init__(address)  # call parent class constructor for basic init
 
         self.channels: int = self.__get_channels() # Returns array of channel numbers
 

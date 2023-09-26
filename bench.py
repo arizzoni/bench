@@ -1,9 +1,9 @@
 #!/usr/bin/env python3.11
 
-from typing import Tuple
+from abc import ABC, abstractmethod
 import pyvisa
 
-class Instrument():
+class Instrument(ABC):
     """
     Instrument class containing basic IEEE-488 standard commands and a framework for basic
     instrument functionality.
