@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.11
+#!/usr/bin/env python
 
 """ Module Docstring
     
@@ -42,7 +42,7 @@ class MSO2014x(oscilloscope.Oscilloscope):
             address -- target oscilloscope's VISA address
         """
 
-        super().__init__( address)  # call parent class constructor
+        super().__init__(address)  # call parent class constructor
 
         # set no header option
         self.write("header off")
@@ -602,6 +602,7 @@ class MSO2014x(oscilloscope.Oscilloscope):
             data_threshold      vertical value to trigger waveform capture for clock channel
             setup_time          time required for setup phase in setup and hold trigger
             hold_time           time required for hold phase in setup and hold trigger
+            upper_threshold     upper threshold per channel, only used for runt and slew rate
 
         Returns:
             Self
@@ -612,7 +613,7 @@ class MSO2014x(oscilloscope.Oscilloscope):
             if trigger_type not in ('edge', 'pulse_width', 'logic', 'video', 'runt',
                                 'transition', 'setup_and_hold', 'bus'):
 
-                raise AttributeError(f"MSO2014x does not support {trigger_type} as a trigger type")
+                raise ValueError(f"MSO2014x does not support { trigger_type } as a trigger type")
         else:
             trigger_type = "edge" # edge trigger by default
 
@@ -625,25 +626,25 @@ class MSO2014x(oscilloscope.Oscilloscope):
         if trigger_type == "edge":
 
             self.write("trigger:a:type edge")
-            self.write(f"trigger:a:edge:source ch{trigger_source}")
+            self.write(f"trigger:a:edge:source ch{ trigger_source }")
 
             # Process Keyword Arguments
             if "trigger_level" in kwargs:
-                self.write(f"trigger:a:level:{trigger_source} {kwargs.get('trigger_level')}")
+                self.write(f"trigger:a:level:{trigger_source} { kwargs.get('trigger_level') }" )
             else:
                 raise ValueError(
                         "MSO2014x requires 'trigger_level' for edge triggering"
                         )
 
             if 'slope' in kwargs:
-                self.write(f"trigger:a:edge:slope {kwargs.get('slope')}") # 'rise' or 'fall'
+                self.write(f"trigger:a:edge:slope { kwargs.get('slope') }" ) # 'rise' or 'fall'
             else:
                 self.write("trigger:a:edge:slope rise") # trigger on rise by default
 
             if 'coupling' in kwargs:
-                self.write(f"trigger:a:edge:coupling {kwargs.get('coupling')}")
+                self.write(f"trigger:a:edge:coupling { kwargs.get('coupling') }" )
             else:
-                self.write(f"trigger:a:edge:coupling dc") # {self.__get_input_coupling()}")
+                self.write(f"trigger:a:edge:coupling { self.__get_input_coupling() }" )
 
         # Logic Trigger
         if trigger_type == "logic":
@@ -661,7 +662,7 @@ class MSO2014x(oscilloscope.Oscilloscope):
                         )
 
             if "function" in kwargs and kwargs.get("function") in ("and", "nand"):
-                self.write(f"trigger:a:logic:function {kwargs.get('function')}")
+                self.write(f"trigger:a:logic:function { kwargs.get('function') } ")
             else:
                 self.write("trigger:a:logic:function and")
 
@@ -669,14 +670,14 @@ class MSO2014x(oscilloscope.Oscilloscope):
             if clock_source == 'none': # trigger on logical pattern from channels
 
                 if "when" in kwargs:
-                    self.write(f"trigger:a:logic:pattern:when {kwargs.get('when')}")
+                    self.write(f"trigger:a:logic:pattern:when { kwargs.get('when') }" )
                 else:
                     raise ValueError(
                             "MSO2014x requires 'when' to specify channels to trigger on pattern"
                             )
 
                 if "delta_time" in kwargs:
-                    self.write(f"trigger:a:logic:pattern:deltatime {kwargs.get('delta_time')}")
+                    self.write(f"trigger:a:logic:pattern:deltatime { kwargs.get('delta_time') }" )
                 else:
                     raise ValueError(
                             "MSO2014x requires 'delta_time' to specify pattern hold time"
@@ -685,12 +686,12 @@ class MSO2014x(oscilloscope.Oscilloscope):
             else: # trigger on pattern based on clock transition from channels
 
                 if "slope" in kwargs:
-                    self.write(f"trigger:a:logic:input:clock:edge {kwargs.get('slope')}")
+                    self.write(f"trigger:a:logic:input:clock:edge { kwargs.get('slope') }" )
                 else:
                     self.write("trigger:a:logic:input:clock:edge rise") # rising edge by default
 
                 if "logic_input" in kwargs: # does logic:function go here?
-                    self.write(f"trigger:a:logic:input:{kwargs.get('logic_input')}") # set input
+                    self.write(f"trigger:a:logic:input:{ kwargs.get('logic_input') }" ) # set input
                 else:
                     raise ValueError("MSO2014x requires logic_input for logic trigger")
 
@@ -703,43 +704,90 @@ class MSO2014x(oscilloscope.Oscilloscope):
             # Check for clock_source
             if "clock_source" in kwargs and kwargs.get("clock_source") in self.channels:
                 clock_source = kwargs.get("clock_source")
-                self.write(f"trigger:a:sethold:clock:source {clock_source}") # set clock source
+                self.write(f"trigger:a:sethold:clock:source { clock_source }") # set clock source
             else:
                 raise ValueError(
                         "MSO2014x requires 'clock_source' for setup and hold triggering"
                         )
 
             if "logic_input" in kwargs:
-                self.write(f"trigger:a:sethold:data:source {kwargs.get('logic_input')}") # set input
+                self.write(f"trigger:a:sethold:data:source { kwargs.get('logic_input') }" ) # set input
             else:
                 raise ValueError("MSO2014x requires logic_input for setup and hold trigger")
 
             if 'slope' in kwargs:
-                self.write(f"trigger:a:sethold:clock:edge {kwargs.get('slope')}") # 'rise' or 'fall'
+                self.write(f"trigger:a:sethold:clock:edge { kwargs.get('slope') }" ) # 'rise' or 'fall'
             else:
                 self.write("trigger:a:edge:slope rise") # trigger on rise by default
 
             if "clock_threshold" in kwargs:
-                self.write(f"trigger:a:sethold:clock:threshold {kwargs.get('clock_threshold')}")
+                self.write(f"trigger:a:sethold:clock:threshold { kwargs.get('clock_threshold') }" )
             else:
                 self.write("trigger:a:sethold:clock:threshold ttl") # ttl level by default
 
             if "data_threshold" in kwargs: # data channels
-                self.write(f"trigger:a:sethold:data:threshold {kwargs.get('data_threshold')}")
+                self.write(f"trigger:a:sethold:data:threshold { kwargs.get('data_threshold') }" )
             else:
                 self.write("trigger:a:sethold:data:threshold ttl") # ttl level by default
 
             if "hold_time" in kwargs:
-                self.write(f"trigger:a:sethold:holdtime {kwargs.get('hold_time')}")
+                self.write(f"trigger:a:sethold:holdtime { kwargs.get('hold_time') }" )
             else:
                 raise ValueError("MSO2014x requires hold_time for setup and hold trigger")
 
             if "setup_time" in kwargs:
-                self.write(f"trigger:a:sethold:setuptime {kwargs.get('setup_time')}")
+                self.write(f"trigger:a:sethold:setuptime { kwargs.get('setup_time') }" )
             else:
                 raise ValueError("MSO2014x requires setup_time for setup and hold trigger")
 
             if "trigger_level" in kwargs:
-                self.write(f"trigger:a:sethold:threshold {kwargs.get('trigger_level')}")
+                self.write(f"trigger:a:sethold:threshold { kwargs.get('trigger_level') }" )
             else:
                 self.write("trigger:a:sethold:threshold ttl")
+
+        # Pulse Width Trigger
+            self.write("trigger:a:type pulse")
+            self.write("trigger:a:pulse:class width")
+
+            self.write(f"trigger:a:pulsewidth:source { trigger_source }")
+
+            if "when" in kwargs:
+                self.write(f"trigger:a:pulsewidth:when { kwargs.get('when') }" )
+            else:
+                raise ValueError("MSO2014x requires 'when' for pulse width triggering")
+
+            if "width" in kwargs:
+                self.write(f"trigger:a:pulsewidth:width { kwargs.get('width') }" )
+            else:
+                raise ValueError("MSO2014x requires 'width' for pulse width triggering")
+
+            if "polarity" in kwargs:
+                self.write( f"trigger:a:pulsewidth:polarity { kwargs.get('polarity') }" )
+            else:
+                self.write( "trigger:a:pulsewidth:polarity positive" ) # positive by default
+
+        # Runt Trigger
+        if trigger_type == "runt":
+            self.write("trigger:a:type pulse")
+            self.write("trigger:a:pulse:class runt")
+
+            self.write("trigger:a:runt:source { trigger_source }")
+
+            if "when" in kwargs:
+                self.write(f"trigger:a:runt:when { kwargs.get('when') }" )
+            else:
+                raise ValueError("MSO2014x requires 'when' for runt triggering")
+
+            if "width" in kwargs:
+                self.write(f"trigger:a:runt:width { kwargs.get('width') }" )
+            else:
+                raise ValueError("MSO2014x requires 'width' for runt triggering")
+
+            if "polarity" in kwargs:
+                self.write( f"trigger:a:runt:polarity { kwargs.get('polarity') }" )
+            else:
+                self.write( "trigger:a:runt:polarity positive" ) # positive by default
+
+            if "upper_threshold" in kwargs:
+                # may want to change this from "current channel" to pass channel in as a kwarg
+                self.write(f"trigger:a:upperthreshold:{ self.current_channel } { kwargs.get('upper_threshold') }")
