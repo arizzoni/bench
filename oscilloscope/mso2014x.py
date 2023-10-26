@@ -710,13 +710,13 @@ class MSO2014x(oscilloscope.Oscilloscope):
                         "MSO2014x requires 'clock_source' for setup and hold triggering"
                         )
 
-            if "logic_input" in kwargs:
-                self.write(f"trigger:a:sethold:data:source { kwargs.get('logic_input') }" ) # set input
+            if "logic_input" in kwargs: # set input
+                self.write(f"trigger:a:sethold:data:source { kwargs.get('logic_input') }" )
             else:
                 raise ValueError("MSO2014x requires logic_input for setup and hold trigger")
 
-            if 'slope' in kwargs:
-                self.write(f"trigger:a:sethold:clock:edge { kwargs.get('slope') }" ) # 'rise' or 'fall'
+            if 'slope' in kwargs: # 'rise' or 'fall'
+                self.write(f"trigger:a:sethold:clock:edge { kwargs.get('slope') }" )
             else:
                 self.write("trigger:a:edge:slope rise") # trigger on rise by default
 
