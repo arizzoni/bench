@@ -17,10 +17,8 @@ This project is under active development.
         f.  Other types of test instruments as needed
     2.  Support the following instruments that I use in my lab
         a.  Keysight DSOX1204G
-        b.  Tektronix MSO2014
-        c.  Keysight E36303
-        d.  Keithley 2231A-30-3
-        e.  Keysight EDU22312
+        b.  Keysight E36303
+        c.  Keysight EDU22312
 
 ## Structure and supported instruments:
 
