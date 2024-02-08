@@ -27,12 +27,11 @@ This project is under active development.
         ├── InstrumentFinder Class
         └── Instrument Abstract Class/
             ├── Oscilloscope Abstract Class/
-            │   ├── Keysight DSOX1204G
-            │   ├── Tektronix MSO2014B
+            │   ├── Keysight DSOX120x
+            │   ├── Tektronix MSO20xx
             │   └── ...
             ├── Power Supply Abstract Class/
-            │   ├── Keysight E36303A
-            │   ├── Keithley 2231A-30-3
+            │   ├── Keysight E3630x
             │   └── ...
             └── Waveform Generator Abstract Class/
                 ├── Keysight EDU22312 Class
