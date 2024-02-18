@@ -207,7 +207,7 @@ class InstrumentFinder():
         # start the resource manager at initialization
         self.resource_manager: pyvisa.ResourceManager = pyvisa.ResourceManager()
 
-    def find_instruments(self) -> Tuple[str, ...]:
+    def find_instruments(self) -> tuple[str, ...]:
         """
         Function to find and list connected serial devices
         TODO
@@ -216,7 +216,7 @@ class InstrumentFinder():
         """
 
         # generate a list of connected serial devices
-        instruments: Tuple[str, ...] = self.resource_manager.list_resources()
+        instruments: tuple[str, ...] = self.resource_manager.list_resources()
 
         # display count of connected devices
         print(f'{len(instruments)} DEVICES DETECTED:')
@@ -232,7 +232,7 @@ class InstrumentFinder():
         # iterate through connected instruments to get describing information
         for instrument in instruments:
 
-            info: Tuple(str, ...) = self.resource_manager.open_resource(instrument).query(
+            info: tuple(str, ...) = self.resource_manager.open_resource(instrument).query(
                 "*idn?").split(',')  # query instrument identifier information
 
             manufacturer: str = info[0]  # split out manufacturer
