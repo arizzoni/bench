@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.11
 
-from abc import ABC, abstractmethod
+from abc import ABC 
 import pyvisa
 
 class Instrument(ABC):

@@ -10,9 +10,7 @@ Display
     Clear
 Channel
     Attenuation
-    Coupling
-    Impedance
-    Signal Type
+    Coupling Impedance Signal Type
     BW Limit
 Waveform
     Vertical Range
@@ -52,7 +50,6 @@ class Oscilloscope(bench.Instrument, ABC):
         """
         TODO: Test if a class is a subclass of Oscilloscope.
         """
-
         return NotImplemented
 
 
