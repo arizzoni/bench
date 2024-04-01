@@ -16,6 +16,9 @@ classifiers = [
     "License :: GPLv3",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+  "pyvisa",
+]
 
 [project.urls]
 "Homepage" = ""
