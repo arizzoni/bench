@@ -1,14 +1,21 @@
 #!/usr/bin/env python3.11
+"""
 
-from abc import ABC 
-import pyvisa
+"""
+
+from abc import ABC
+import pyvisa as visa
+
 
 class Instrument(ABC):
     """
-    Instrument class containing basic IEEE-488 standard commands and a framework for basic
+    Base instrument class.
+
+    Contains basic IEEE-488 standard commands and a framework for basic
     instrument functionality.
 
-    Methods:
+    Methods
+    -------
         write()
         read()
         query()
@@ -23,29 +30,31 @@ class Instrument(ABC):
 
     def __init__(self, address: str) -> None:
         """
-        Constructor for the Instrument class. Connects to instrument at {address}
+        Initialize an instrument using the Instrument() class.
 
-        Arguments:
+        Connects to instrument at {address}.
+
+        Arguments
+        ---------
             address -- address of the instrument to connect to
         """
         self.address: str = address  # save address for later
 
         # start the resource manager
-        self.resource_manager: pyvisa.ResourceManager = pyvisa.ResourceManager()
+        self.resource_manager: visa.ResourceManager = visa.ResourceManager()
 
         # begin communicating with the instrument
-        self.instrument: pyvisa.Resource = self.resource_manager.open_resource(
+        self.instrument: visa.Resource = self.resource_manager.open_resource(
             self.address)
 
     def close(self) -> None:
-        """Close the pyvisa Resource Manager session
-        """
+        """Close the pyvisa Resource Manager session."""
         self.resource_manager.close()
 
     def write(self, command: str) -> None:
         """
         Writes the passed command to the instrument
-        Arguments:
+        Arguments
             command -- command string to pass to the instrument
         """
 
@@ -55,7 +64,7 @@ class Instrument(ABC):
         """
         Reads from the instrument and returns passed information
 
-        Returns:
+        Returns
             returns string passed by instrument
         """
 
@@ -65,10 +74,10 @@ class Instrument(ABC):
         """
         queries instrument - equivalent to a write() immediately followed by a read()
 
-        Arguments:
+        Arguments
             command -- command string to pass to the instrument
 
-        Returns:
+        Returns
             returns string passed by instrument
         """
 
@@ -87,30 +96,30 @@ class Instrument(ABC):
         Enables bits in the Standard Event Enable register. Selected bits are
         then reported to Status Byte.
 
-        Arguments:
+        Arguments
             bits -- bits to enable in the IEEE-488 Standard Event Enable register
 
-        Standard Event Status Register:
+        Standard Event Status Register
 
-        Bit 0: OPC: Operation Complete.
+            Bit 0: OPC: Operation Complete.
 
-        Bit 1: unused: Always set to 0.
+            Bit 1: unused: Always set to 0.
 
-        Bit 2: QYE: Query Error. The power supply tried to read the output
-        buffer but it was empty. Or, a new command line was received before a
-        previous query had been read. Or, both the input and output buffers
-        are full.
+            Bit 2: QYE: Query Error. The power supply tried to read the output
+            buffer but it was empty. Or, a new command line was received before a
+            previous query had been read. Or, both the input and output buffers
+            are full.
 
-        Bit 3: DDE: Device Error. Self-test or calibration error occurred.
+            Bit 3: DDE: Device Error. Self-test or calibration error occurred.
 
-        Bit 4: EXE: Execution Error. An execution error occurred.
+            Bit 4: EXE: Execution Error. An execution error occurred.
 
-        Bit 5: CME: Command Error. A command syntax error occurred.
+            Bit 5: CME: Command Error. A command syntax error occurred.
 
-        Bit 6: unused: Always set to 0.
+            Bit 6: unused: Always set to 0.
 
-        Bit 7: PON: Power On. Power has been turned off and on since the last
-        time the event register was read or cleared.
+            Bit 7: PON: Power On. Power has been turned off and on since the last
+            time the event register was read or cleared.
         """
 
         self.write(f"*ese {bits}")
@@ -120,33 +129,33 @@ class Instrument(ABC):
         Queries bits in the Standard Event Enable register.
         Selected bits are then reported to Status Byte
 
-        Arguments:
+        Arguments
             bits -- bits to get in the IEEE-488 Standard Event Enable register
 
-        Returns:
+        Returns
             returns callback for write function
 
-        Standard Event Status Register:
+        Standard Event Status Register
 
-        Bit 0: OPC: Operation Complete.
+            Bit 0: OPC: Operation Complete.
 
-        Bit 1: unused: Always set to 0.
+            Bit 1: unused: Always set to 0.
 
-        Bit 2: QYE: Query Error. The power supply tried to read the output
-        buffer but it was empty. Or, a new command line was received before a
-        previous query had been read. Or, both the input and output buffers
-        are full.
+            Bit 2: QYE: Query Error. The power supply tried to read the output
+            buffer but it was empty. Or, a new command line was received before a
+            previous query had been read. Or, both the input and output buffers
+            are full.
 
-        Bit 3: DDE: Device Error. Self-test or calibration error occurred.
+            Bit 3: DDE: Device Error. Self-test or calibration error occurred.
 
-        Bit 4: EXE: Execution Error. An execution error occurred.
+            Bit 4: EXE: Execution Error. An execution error occurred.
 
-        Bit 5: CME: Command Error. A command syntax error occurred.
+            Bit 5: CME: Command Error. A command syntax error occurred.
 
-        Bit 6: unused: Always set to 0.
+            Bit 6: unused: Always set to 0.
 
-        Bit 7: PON: Power On. Power has been turned off and on since the last
-        time the event register was read or cleared.
+            Bit 7: PON: Power On. Power has been turned off and on since the last
+            time the event register was read or cleared.
         """
 
         return self.query(f"*ese {bits}?")
@@ -157,7 +166,7 @@ class Instrument(ABC):
         and Software Revision
 
 
-        Returns:
+        Returns
             returns instrument *idn response: manufacturer, mpn,
             serial number, and sw rev
         """
@@ -205,7 +214,7 @@ class InstrumentFinder():
         """
 
         # start the resource manager at initialization
-        self.resource_manager: pyvisa.ResourceManager = pyvisa.ResourceManager()
+        self.resource_manager: visa.ResourceManager = visa.ResourceManager()
 
     def find_instruments(self) -> tuple[str, ...]:
         """
@@ -226,7 +235,7 @@ class InstrumentFinder():
     def get_info(self, instruments) -> None:
         """Gets information about the detected instruments and prints it to console
 
-        Arguments:
+        Arguments
             instruments -- tuple of instruments found using find_instruments
         """
         # iterate through connected instruments to get describing information
